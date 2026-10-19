@@ -1,5 +1,7 @@
 "use strict";
 (() => {
+  const halloween=window.AlyinaHalloween;
+  if(!halloween)throw new Error("Halloween visuals/audio module missing");
   // ALYINA · Vampire of Halloween — arcade gothic blocks, plain JS + Canvas.
   const W=10,H=20,S=30;
   const canvas=document.getElementById("board"),ctx=canvas.getContext("2d");
@@ -8,7 +10,7 @@
   const overlay=document.getElementById("overlay"),kicker=document.getElementById("overlay-kicker");
   const title=document.getElementById("overlay-title"),message=document.getElementById("overlay-message");
   const primary=document.getElementById("primary-button"),pauseButton=document.getElementById("pause-button");
-  const soundButton=document.getElementById("sound-button"),scoreEl=document.getElementById("score");
+  const soundButton=document.getElementById("sound-button"),musicButton=document.getElementById("music-button"),scoreEl=document.getElementById("score");
   const linesEl=document.getElementById("lines"),levelEl=document.getElementById("level");
   const bestEl=document.getElementById("best"),announcer=document.getElementById("announcer");
   const palettes=[
@@ -34,7 +36,7 @@
   const board=Array.from({length:H},()=>Array(W).fill(0));
   let bag=[],queue=[],piece=null,held=null,holdUsed=false;
   let score=0,lines=0,level=1,combo=-1,best=0;
-  let started=false,paused=false,over=false,audioOn=true,audioCtx=null;
+  let started=false,paused=false,over=false,audioOn=true,musicOn=true,audioCtx=null;
   let dropClock=0,lastFrame=0,raf=0,particles=[],shake=0,flash=0,lightning=0,popup=null;
   try{best=Number(localStorage.getItem(storageKey))||0;}catch(_){}
   bestEl.textContent=best.toLocaleString("fr-FR");
@@ -237,22 +239,25 @@
     sweep();spawn();
   }
   function endGame(){
-    over=true;paused=false;pauseButton.disabled=true;pauseButton.innerHTML='Ⅱ <span>PAUSE</span>';
+    over=true;paused=false;halloween.stopMusic();pauseButton.disabled=true;pauseButton.innerHTML='Ⅱ <span>PAUSE</span>';
     overlayMode("over");sound(275,.65,"sawtooth",.045,55);say("Fin de partie. Score "+score);
   }
   function start(){
+    halloween.stopMusic();
     board.forEach(row=>row.fill(0));bag=[];queue=[];piece=null;held=null;holdUsed=false;
     score=0;lines=0;level=1;combo=-1;dropClock=0;lastFrame=0;
     particles=[];shake=0;flash=0;popup=null;over=false;paused=false;started=true;
     stats();spawn();overlay.hidden=true;pauseButton.disabled=false;
     pauseButton.innerHTML='Ⅱ <span>PAUSE</span>';
-    sound(450,.22,"triangle",.04,730);say("Alyina s'est réveillée !");
+    sound(450,.22,"triangle",.04,730);
+    if(musicOn)halloween.startMusic();
+    say("Alyina s'est réveillée !");
   }
   function togglePause(){
     if(!started||over)return;
     paused=!paused;lastFrame=0;dropClock=0;
-    if(paused){overlayMode("pause");say("Partie en pause.");}
-    else{overlay.hidden=true;say("Partie reprise.");}
+    if(paused){halloween.stopMusic();overlayMode("pause");say("Partie en pause.");}
+    else{overlay.hidden=true;if(musicOn)halloween.startMusic();say("Partie reprise.");}
     pauseButton.innerHTML=paused?'▶ <span>REPRENDRE</span>':'Ⅱ <span>PAUSE</span>';
   }
   function tile(g,x,y,size,id,opt={}){
@@ -273,9 +278,9 @@
     g.lineWidth=Math.max(.8,size*.055);g.strokeRect(m+2,m+2,size-2*m-4,size-2*m-4);
     g.fillStyle="rgba(255,255,255,.33)";g.fillRect(4,4,size-8,Math.max(1,size*.07));
     g.fillStyle="rgba(0,0,0,.21)";g.fillRect(5,size-6,size-10,2);
-    g.globalAlpha=.85;g.fillStyle="#fff0ee";
-    g.font=Math.round(size*.48)+"px Georgia,serif";g.textAlign="center";g.textBaseline="middle";
-    g.fillText(p.glyph,size/2,size/2+1);g.restore();
+    g.globalAlpha=1;
+    halloween.drawIcon(g,size,id);
+    g.restore();
   }
   function pieceTiles(g,p,ghost=false,dy=0){
     if(!p)return;
@@ -428,9 +433,19 @@
   pauseButton.addEventListener("click",togglePause);
   soundButton.addEventListener("click",()=>{
     audioOn=!audioOn;soundButton.setAttribute("aria-pressed",String(audioOn));
-    soundButton.setAttribute("aria-label",audioOn?"Désactiver le son":"Activer le son");
-    soundButton.innerHTML=audioOn?'♫ <span>SON ON</span>':'♪ <span>SON OFF</span>';
+    soundButton.setAttribute("aria-label",audioOn?"Désactiver les effets sonores":"Activer les effets sonores");
+    soundButton.innerHTML=audioOn?'♫ <span>SFX ON</span>':'♪ <span>SFX OFF</span>';
     if(audioOn)sound(620,.09,"sine",.03);
+  });
+  musicButton.addEventListener("click",()=>{
+    musicOn=!musicOn;
+    halloween.setMusicEnabled(musicOn);
+    musicButton.setAttribute("aria-pressed",String(musicOn));
+    musicButton.setAttribute("aria-label",musicOn?"Désactiver la musique":"Activer la musique");
+    musicButton.innerHTML=musicOn?'♬ <span>MUSIQUE ON</span>':'♬ <span>MUSIQUE OFF</span>';
+    if(musicOn&&awake())halloween.startMusic();
+    if(!musicOn)halloween.stopMusic();
+    say(musicOn?"Musique activée.":"Musique désactivée.");
   });
   previews();overlayMode("start");paint(0);raf=requestAnimationFrame(frame);
 })();
