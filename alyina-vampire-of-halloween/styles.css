@@ -1,0 +1,150 @@
+:root{
+  color-scheme:dark;
+  --ink:#10051d;--panel:#1d0d2d;--red:#ef3e55;--blood:#c61236;
+  --orange:#ffab56;--gold:#eac18c;--violet:#8c61cb;--soft:#c9b4d5;
+  --edge:rgba(230,175,195,.2);
+}
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--ink)}
+body{margin:0;min-height:100vh;font-family:"DM Sans",Arial,sans-serif;color:#f8eafa;background:
+  radial-gradient(ellipse at 50% -12%,rgba(143,30,79,.4),transparent 48%),
+  radial-gradient(ellipse at 88% 36%,rgba(74,29,106,.24),transparent 39%),
+  linear-gradient(160deg,#130519,#0a0716 70%,#1a081b);overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.32;background-image:radial-gradient(#dca7c9 0.65px,transparent 0.8px);background-size:29px 31px;mask-image:linear-gradient(#000,transparent 85%)}
+button{font:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+button:disabled{opacity:.4;cursor:not-allowed}
+.sky{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.moon{position:absolute;top:30px;left:calc(50% + 265px);width:150px;height:150px;border-radius:50%;
+  background:radial-gradient(circle at 39% 35%,#ffe6c7,#f4a7a9 65%,#ad5a91);
+  box-shadow:0 0 45px 20px rgba(237,102,141,.15),0 0 140px 40px rgba(174,43,88,.10);
+  opacity:.74}
+.moon::after{content:"";position:absolute;inset:24px;border-radius:50%;box-shadow:22px 8px 0 6px rgba(128,65,97,.15),-26px 36px 0 -5px rgba(134,63,94,.12)}
+.bat{position:absolute;font-size:55px;font-family:serif;color:rgba(11,5,23,.7);transform:rotate(-20deg) scaleX(2);text-shadow:0 4px 3px rgba(0,0,0,.3)}
+.bat-one{top:170px;right:12%}.bat-two{top:90px;left:15%;font-size:28px}.bat-three{top:295px;left:9%;font-size:41px}
+.page{position:relative;z-index:1;width:min(100% - 30px,680px);margin:0 auto;padding:22px 0 24px}
+.hero{text-align:center;margin:0 auto 22px}
+.eyebrow{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--orange);font-size:10px;letter-spacing:3.6px;font-weight:800;margin:0 0 2px}
+.eyebrow .line{width:32px;height:1px;background:linear-gradient(90deg,transparent,#c8756d)}
+.eyebrow .line:last-child{transform:rotate(180deg)}
+.title-line{display:flex;align-items:center;justify-content:center;gap:22px}
+.title-line h1{font:clamp(52px,10vw,82px)/1 "Creepster",Georgia,serif;letter-spacing:6px;color:#ec4a58;margin:5px 0 -3px;
+  text-shadow:0 4px 0 #5c0e30,0 6px 22px rgba(224,31,63,.35)}
+.fang{font-size:17px;color:var(--gold);opacity:.85}
+.subtitle{font:700 clamp(13px,2.6vw,20px)/1.2 "Cinzel",Georgia,serif;letter-spacing:6px;color:#f4c494;margin:5px 0 7px}
+.subtitle em{font-style:normal;font-size:.7em;color:var(--red)}
+.tagline{font-size:12px;letter-spacing:.8px;color:#ad93b9;margin:0}
+.game-shell{max-width:550px;margin:auto;display:grid;grid-template-columns:minmax(0,340px) minmax(0,180px);align-items:start;gap:19px}
+.play-column{min-width:0}
+.stats{display:grid;grid-template-columns:1.35fr .85fr .8fr;gap:7px;margin-bottom:9px}
+.stat{min-width:0;border:1px solid var(--edge);border-radius:8px;padding:8px 10px 7px;
+  background:linear-gradient(140deg,rgba(69,26,59,.72),rgba(31,15,47,.85));box-shadow:inset 0 1px rgba(255,255,255,.06)}
+.stat span{display:block;white-space:nowrap;font-size:9px;letter-spacing:1.3px;color:#b99ebc;font-weight:800}
+.stat strong{display:block;font:700 23px/1.25 "Cinzel",Georgia,serif;color:#fff0f1;margin-top:2px;font-variant-numeric:tabular-nums}
+.stat:first-child strong{color:#ff6975}
+.board-frame{position:relative;padding:7px;border:1px solid rgba(242,92,119,.51);
+  border-radius:9px;background:linear-gradient(125deg,#54253e,#21132f 70%,#623458);
+  box-shadow:0 0 0 3px rgba(233,62,79,.06),0 20px 60px rgba(0,0,0,.55),0 0 38px rgba(205,22,58,.15)}
+.board-frame::before,.board-frame::after{content:"✦";position:absolute;top:-10px;color:var(--orange);font-size:14px;z-index:3}
+.board-frame::before{left:-6px}.board-frame::after{right:-6px}
+.board-glow{position:absolute;inset:-9px;pointer-events:none;border:1px solid rgba(240,99,111,.10);border-radius:11px}
+#board{width:100%;height:auto;aspect-ratio:1/2;display:block;background:#10091b;border-radius:3px;touch-action:none;cursor:crosshair}
+.overlay{position:absolute;inset:7px;display:grid;place-items:center;z-index:4;padding:15px;text-align:center;
+  background:radial-gradient(ellipse at center,rgba(35,6,31,.84),rgba(13,5,27,.95) 72%);
+  backdrop-filter:blur(2px);border-radius:3px}
+.overlay[hidden]{display:none}
+.overlay-content{max-width:290px}
+.overlay-sigil{display:block;font-size:42px;line-height:1;color:var(--red);text-shadow:0 0 22px rgba(235,53,84,.6);margin-bottom:17px}
+.overlay-overline{letter-spacing:3px;color:#ffb88d;font-size:10px;font-weight:800;margin:0 0 10px}
+.overlay h2{font:700 clamp(20px,4.5vw,30px)/1.2 "Cinzel",Georgia,serif;color:#fff1e1;margin:0 0 12px}
+.overlay p:not(.overlay-overline):not(.overlay-hint){font-size:13px;line-height:1.6;color:#c2a9c6;margin:0 0 20px}
+.primary-button{display:inline-flex;justify-content:center;align-items:center;gap:10px;min-height:46px;max-width:100%;padding:11px 16px;
+  font-size:11px;font-weight:800;letter-spacing:1.1px;border:1px solid #ff8784;border-radius:6px;color:white;
+  background:linear-gradient(145deg,#ed445b,#a91740);box-shadow:0 8px 28px rgba(223,36,69,.3);transition:transform .12s,filter .12s}
+.primary-button:hover{filter:brightness(1.18);transform:translateY(-2px)}
+.primary-button:active{transform:translateY(1px)}
+.primary-button span{font-size:20px}
+.overlay-hint{font-size:9px;color:#967d9e;line-height:1.5;margin:20px 0 0;letter-spacing:.5px}
+.sidebar{min-width:0;display:grid;gap:11px}
+.side-card{padding:13px;background:linear-gradient(145deg,rgba(47,20,56,.93),rgba(22,11,37,.97));
+  border:1px solid var(--edge);border-radius:9px;box-shadow:inset 0 1px rgba(255,255,255,.05)}
+.card-heading{font-size:10px;color:#d9bbd2;font-weight:800;letter-spacing:1.7px;white-space:nowrap}
+.diamond{color:#f69688;margin-right:5px}
+.side-card canvas{display:block;margin:4px auto 0;width:min(100%,120px);height:auto;aspect-ratio:1}
+.tiny{font-size:9px;color:#8c789b;letter-spacing:1px;text-align:center;margin:0}
+.reserve canvas{margin-top:0}
+.best-card strong{display:block;margin:10px 0 5px;font:700 clamp(18px,3vw,27px)/1.1 "Cinzel",Georgia,serif;color:#fbd29b;overflow-wrap:anywhere}
+.best-card .tiny{text-align:left;font-size:8px}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.option-button{border-radius:7px;padding:9px 5px;border:1px solid rgba(220,123,142,.36);background:rgba(61,28,60,.64);
+  color:#ffb6ab;font-size:15px;font-weight:700;min-height:42px}
+.option-button span{display:block;font-size:9px;letter-spacing:1px;margin-top:1px;color:#c7afca}
+.option-button:hover:not(:disabled){background:rgba(115,49,81,.85)}
+.help-card{border:1px solid rgba(222,166,150,.11);border-radius:7px;padding:12px;background:rgba(19,8,32,.5)}
+.help-title{font:700 11px "Cinzel",serif;color:#e5b17e;letter-spacing:1.1px}
+.help-card p{color:#aa98b5;font-size:10px;margin:9px 0 0;line-height:1.3}
+kbd{font:700 9px "DM Sans",sans-serif;color:#f2d7e3;border:1px solid #5d3b61;border-radius:3px;padding:2px 4px;background:#261630}
+.touch-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px;touch-action:manipulation}
+.control{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;min-height:62px;
+  color:#e8cbdc;border:1px solid rgba(217,148,173,.34);border-radius:9px;
+  background:linear-gradient(180deg,#36203e,#24132f);box-shadow:0 3px 0 #120817;user-select:none;
+  -webkit-user-select:none;-webkit-tap-highlight-color:transparent;touch-action:none}
+.control span{font:400 27px/1 sans-serif;color:#f6d4e4}
+.control small{font-size:9px;font-weight:800;letter-spacing:1px}
+.control.special{border-color:rgba(245,129,116,.50);background:linear-gradient(170deg,#60243d,#39172f)}
+.control.special span{color:#ff9f87}
+.control:is(:active,.held){transform:translateY(2px);box-shadow:0 1px 0 #120817;filter:brightness(1.3)}
+footer{text-align:center;margin:23px auto 0;font:700 10px "Cinzel",serif;letter-spacing:2px;color:#936f9d}
+footer span{color:#da6575;margin:0 10px}
+footer small{display:block;font:600 9px "DM Sans",sans-serif;letter-spacing:1.8px;color:#644f76;margin-top:6px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media(max-width:600px){
+  .page{width:calc(100% - 18px);padding-top:14px}
+  .hero{margin-bottom:16px}
+  .eyebrow{font-size:9px;letter-spacing:2.5px}
+  .title-line h1{font-size:clamp(51px,13vw,72px);letter-spacing:3px}
+  .title-line{gap:11px}
+  .subtitle{font-size:clamp(11px,3.2vw,16px);letter-spacing:3.3px}
+  .tagline{font-size:11px}
+  .game-shell{grid-template-columns:minmax(0,1fr) minmax(112px,32%);gap:9px}
+  .stats{gap:4px;margin-bottom:7px}
+  .stat{padding:7px 5px 6px}
+  .stat span{font-size:7px;letter-spacing:.3px}
+  .stat strong{font-size:clamp(16px,4.2vw,21px)}
+  .board-frame{padding:4px}
+  .overlay{inset:4px;padding:7px}
+  .overlay-sigil{font-size:30px;margin-bottom:9px}
+  .overlay-overline{font-size:8px;letter-spacing:1px}
+  .overlay h2{font-size:clamp(17px,4vw,23px);margin-bottom:9px}
+  .overlay p:not(.overlay-overline):not(.overlay-hint){font-size:11px;margin-bottom:12px}
+  .primary-button{min-height:37px;font-size:9px;padding:7px 9px;letter-spacing:.4px}
+  .overlay-hint{font-size:8px;margin-top:11px}
+  .sidebar{gap:7px}
+  .side-card{padding:9px 7px}
+  .card-heading{font-size:8px;letter-spacing:.5px}
+  .side-card canvas{width:100%}
+  .tiny{font-size:7px}
+  .best-card strong{font-size:19px}
+  .options{gap:4px}
+  .option-button{font-size:14px;padding:7px 2px}
+  .option-button span{font-size:7px}
+  .help-card{padding:7px 5px}
+  .help-title{font-size:9px}
+  .help-card p{font-size:9px;margin:7px 0 0}
+  kbd{font-size:8px;padding:1px 3px}
+  .touch-controls{gap:5px;margin-top:9px}
+  .control{min-height:54px;border-radius:7px}
+  .control span{font-size:23px}
+  .control small{font-size:7px;letter-spacing:.4px}
+  footer{margin-top:16px}
+  .moon{left:auto;right:-57px;top:25px;width:120px;height:120px}
+  .bat-one{right:4%}
+}
+@media(max-width:355px){
+  .game-shell{grid-template-columns:minmax(0,1fr) 101px;gap:6px}
+  .sidebar{gap:5px}
+  .help-card p{font-size:8px}
+  .overlay-hint{display:none}
+  .control{min-height:49px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
