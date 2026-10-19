@@ -1,0 +1,120 @@
+/* CINEMATIC HALLOWEEN EDITION · ambient art direction
+   All scenery is generated in CSS + Canvas — no heavy image downloads. */
+:root{--inferno:#ff4b63;--amber:#ffc383;--witch:#a164ee}
+body{background:
+ radial-gradient(ellipse 590px 370px at 54% -14%,rgba(234,51,73,.28),transparent 90%),
+ radial-gradient(ellipse 370px 450px at 10% 35%,rgba(119,21,119,.22),transparent 95%),
+ radial-gradient(ellipse 440px 560px at 92% 65%,rgba(128,24,54,.14),transparent 92%),
+ linear-gradient(180deg,#1d061f 0%,#080618 65%,#130414 100%)}
+body::after{content:"";position:fixed;pointer-events:none;inset:0;z-index:0;opacity:.22;
+ background:repeating-linear-gradient(180deg,transparent 0 3px,rgba(13,3,23,.24) 4px 5px);mix-blend-mode:multiply}
+.sky::before{content:"";position:absolute;inset:-25% -30%;
+ background:
+  radial-gradient(ellipse 24% 7% at 13% 24%,rgba(191,50,117,.14),transparent 90%),
+  radial-gradient(ellipse 30% 7% at 73% 31%,rgba(136,72,149,.13),transparent 90%),
+  radial-gradient(ellipse 30% 8% at 42% 73%,rgba(234,43,86,.08),transparent 95%);
+ filter:blur(18px);animation:nightMist 25s ease-in-out infinite alternate}
+.sky::after{content:"";position:absolute;bottom:-45px;left:-2%;width:104%;height:230px;opacity:.22;
+ background:linear-gradient(180deg,transparent,rgba(6,3,12,.96));
+ clip-path:polygon(0 70%,4% 63%,8% 69%,11% 53%,13% 57%,15% 68%,19% 61%,22% 70%,25% 54%,27% 61%,30% 60%,34% 46%,37% 60%,41% 69%,44% 56%,49% 67%,52% 61%,56% 70%,61% 52%,64% 64%,67% 54%,71% 62%,75% 70%,78% 48%,80% 53%,83% 70%,87% 57%,90% 65%,93% 52%,96% 68%,100% 61%,100% 100%,0 100%)}
+.moon{opacity:1;transform-origin:center;animation:bloodMoon 8s ease-in-out infinite}
+.moon::before{content:"";position:absolute;inset:-15px;border-radius:50%;
+ border:1px solid rgba(255,137,148,.21);box-shadow:0 0 18px 1px rgba(245,87,121,.08),
+ inset 0 0 18px rgba(255,135,167,.09);animation:lunarOrbit 17s linear infinite}
+.moon::after{content:"";position:absolute;inset:16px;border-radius:50%;
+ background:radial-gradient(circle at 70% 65%,rgba(103,28,63,.17) 0 8%,transparent 11%),
+ radial-gradient(circle at 20% 27%,rgba(108,41,82,.19) 0 8%,transparent 12%),
+ radial-gradient(circle at 45% 82%,rgba(100,30,63,.16) 0 12%,transparent 15%);box-shadow:none}
+.bat{display:block;width:54px;height:26px;font-size:0!important;
+ background:#1b0b25;clip-path:polygon(0% 29%,11% 20%,17% 43%,27% 22%,39% 26%,50% 61%,61% 26%,73% 22%,83% 43%,89% 20%,100% 29%,96% 63%,85% 53%,75% 76%,62% 64%,50% 84%,38% 64%,25% 76%,15% 53%,4% 63%);
+ filter:drop-shadow(0 0 12px rgba(233,73,121,.15));transform:rotate(-15deg);animation:batFlight 8s ease-in-out infinite}
+.bat-two{width:33px;height:16px;animation-duration:11s;animation-delay:-3s}
+.bat-three{width:45px;height:21px;animation-duration:9s;animation-delay:-4s}
+.hero{position:relative}
+.hero::before,.hero::after{content:"✧";position:absolute;top:61px;font-size:23px;color:rgba(243,124,135,.25);
+ filter:drop-shadow(0 0 8px rgba(236,77,88,.4));animation:flicker 6s infinite}
+.hero::before{left:0}.hero::after{right:0;animation-delay:2s}
+.title-line h1{position:relative;color:#ff5566;
+ -webkit-text-stroke:.5px rgba(255,215,199,.22);
+ background:linear-gradient(180deg,#ffc7a4 0%,#ff6475 30%,#f83756 52%,#8e1738 100%);
+ -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+ filter:drop-shadow(0 5px 0 rgba(45,5,27,.8)) drop-shadow(0 0 17px rgba(234,38,72,.40));
+ animation:infernalName 6s ease-in-out infinite}
+.fang{animation:flicker 5s infinite;text-shadow:0 0 13px #fa9f79}
+.subtitle{filter:drop-shadow(0 2px 14px rgba(255,161,119,.18))}
+.tagline{color:#c6a5c4}
+.board-frame{isolation:isolate;border:1px solid rgba(255,108,143,.76);
+ background:linear-gradient(145deg,#8b3e61 0%,#5d224e 19%,#2b143d 55%,#673051 100%);
+ box-shadow:0 0 0 1px #120917,0 0 0 4px rgba(167,48,92,.16),0 20px 75px rgba(0,0,0,.74),
+ 0 0 44px rgba(228,38,94,.33),inset 0 0 20px rgba(255,132,154,.14);
+ animation:infernalFrame 7s ease-in-out infinite}
+.board-frame::before,.board-frame::after{z-index:5;color:#ffd59b;text-shadow:0 0 12px #ff526b}
+.board-glow::before{content:"";position:absolute;inset:-4px;border-radius:12px;pointer-events:none;
+ background:conic-gradient(from 25deg at 50% 50%,transparent 0 22%,rgba(255,135,143,.18) 26%,transparent 32% 67%,rgba(186,76,225,.20) 71%,transparent 80%);
+ z-index:-1;filter:blur(10px);animation:relicAura 15s linear infinite}
+.board-glow::after{content:"";position:absolute;inset:8px;border:1px solid rgba(255,193,154,.16);
+ border-radius:2px;box-shadow:inset 0 0 28px rgba(212,26,77,.14);pointer-events:none}
+.stats .stat{position:relative;overflow:hidden;border-color:rgba(239,114,161,.26)}
+.stat::before{content:"";position:absolute;width:80%;height:2px;top:0;left:10%;
+ background:linear-gradient(90deg,transparent,rgba(255,138,151,.7),transparent)}
+.stat:first-child strong{color:#ff728a;text-shadow:0 0 22px rgba(255,80,112,.6)}
+.stat:last-child strong{color:#ffd8a9;text-shadow:0 0 14px rgba(255,156,100,.25)}
+.sidebar .side-card{position:relative;overflow:hidden;border-color:rgba(229,128,162,.27)}
+.side-card::before{content:"";position:absolute;inset:0 0 auto;height:2px;
+ background:linear-gradient(90deg,transparent,rgba(236,115,161,.67),transparent)}
+.coming{box-shadow:0 4px 25px rgba(154,33,95,.15),inset 0 1px rgba(255,255,255,.08)}
+.coming canvas,.reserve canvas{filter:drop-shadow(0 0 10px rgba(209,70,129,.14))}
+.best-card strong{text-shadow:0 0 20px rgba(255,176,124,.26)}
+.overlay{overflow:hidden}
+.overlay::before{content:"";position:absolute;z-index:0;left:50%;top:46%;width:220px;height:220px;
+ border:1px solid rgba(253,94,139,.17);border-radius:50%;transform:translate(-50%,-50%);
+ box-shadow:0 0 0 18px rgba(239,95,160,.018),0 0 0 37px rgba(230,114,158,.014),0 0 0 59px rgba(174,53,117,.015);
+ background:conic-gradient(from 0deg,transparent,rgba(236,80,128,.07),transparent 40%,rgba(185,69,188,.08),transparent);
+ animation:occultSpin 24s linear infinite}
+.overlay::after{content:"✦  ✧  ✦  ✧  ✦  ✧  ✦";position:absolute;top:12%;left:50%;
+ transform:translateX(-50%);font:15px Cinzel,serif;letter-spacing:9px;color:rgba(248,151,164,.17);
+ white-space:nowrap;pointer-events:none}
+.overlay-content{position:relative;z-index:1}
+.overlay-sigil{font-size:47px;color:#ff647c;text-shadow:0 0 14px rgba(255,64,107,.8),0 0 55px rgba(239,56,124,.32);
+ animation:sigilBeat 3.5s ease-in-out infinite}
+.overlay h2{text-shadow:0 0 24px rgba(240,74,133,.23)}
+.primary-button{position:relative;overflow:hidden;background:linear-gradient(125deg,#ff6a74 0%,#db254f 37%,#8d0b39 100%);
+ border:1px solid #ffb3a0;text-shadow:0 1px 2px rgba(0,0,0,.4);
+ box-shadow:0 0 0 1px rgba(118,15,49,.6),0 0 25px rgba(255,59,103,.4),0 8px 28px rgba(74,9,45,.7)}
+.primary-button::before{content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(115deg,transparent 0 32%,rgba(255,255,255,.21) 47%,transparent 58% 100%);
+ transform:translateX(-170%);animation:buttonGleam 4.8s ease-in-out infinite}
+.control{position:relative;overflow:hidden;border-color:rgba(232,137,187,.4);transition:filter .16s}
+.control::before{content:"";position:absolute;top:0;left:17%;width:66%;height:1px;
+ background:linear-gradient(90deg,transparent,rgba(255,230,224,.62),transparent)}
+.control.special{background:linear-gradient(150deg,#7d334c,#3d193d);box-shadow:0 3px 0 #140614,0 0 13px rgba(216,49,93,.15)}
+.control:is(:active,.held){filter:brightness(1.48) drop-shadow(0 0 8px rgba(248,88,129,.26))}
+.help-card{background:linear-gradient(160deg,rgba(47,17,49,.54),rgba(19,8,32,.65))}
+footer span{color:#f17481;text-shadow:0 0 10px #e74166}
+@keyframes nightMist{from{transform:translateX(-10%) scale(1.06)}to{transform:translateX(11%) scale(1.13)}}
+@keyframes bloodMoon{0%,100%{box-shadow:0 0 44px 20px rgba(237,102,141,.15),0 0 145px 45px rgba(174,43,88,.12)}
+  50%{box-shadow:0 0 60px 30px rgba(237,78,107,.27),0 0 195px 58px rgba(189,35,91,.17)}}
+@keyframes lunarOrbit{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes batFlight{0%,100%{transform:translate(0,0) scaleX(1) rotate(-9deg)}
+  25%{transform:translate(-28px,-18px) scaleX(.7) rotate(9deg)}
+  50%{transform:translate(11px,9px) scaleX(1.12) rotate(-15deg)}
+  75%{transform:translate(-16px,-9px) scaleX(.82) rotate(3deg)}}
+@keyframes flicker{0%,94%,100%{opacity:.85}95%,97%{opacity:.27}96%,98%{opacity:1}}
+@keyframes infernalName{0%,100%{filter:drop-shadow(0 5px 0 rgba(45,5,27,.8)) drop-shadow(0 0 17px rgba(234,38,72,.40))}
+  50%{filter:drop-shadow(0 5px 0 rgba(45,5,27,.8)) drop-shadow(0 0 29px rgba(255,60,87,.67))}}
+@keyframes infernalFrame{0%,100%{box-shadow:0 0 0 1px #120917,0 0 0 4px rgba(167,48,92,.16),0 20px 75px rgba(0,0,0,.74),0 0 44px rgba(228,38,94,.33)}
+  50%{box-shadow:0 0 0 1px #120917,0 0 0 4px rgba(167,48,92,.21),0 20px 75px rgba(0,0,0,.74),0 0 58px rgba(228,38,94,.48)}}
+@keyframes relicAura{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes occultSpin{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes sigilBeat{0%,100%{transform:scale(1);opacity:.87}50%{transform:scale(1.1);opacity:1}}
+@keyframes buttonGleam{0%,66%,100%{transform:translateX(-180%)}80%{transform:translateX(175%)}}
+@media(max-width:600px){
+ .hero::before,.hero::after{top:44px;font-size:15px}
+ .moon{right:-70px;top:20px}
+ .overlay::before{width:180px;height:180px}
+ .overlay::after{top:10%;letter-spacing:5px;font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){
+ .sky::before,.moon,.moon::before,.bat,.hero::before,.hero::after,.title-line h1,.board-frame,
+ .board-glow::before,.overlay::before,.overlay-sigil,.primary-button::before{animation:none!important}
+}
