@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Creepster&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./cinematic.css">
+  <script src="./halloween-extras.js" defer></script>
   <script src="./game.js" defer></script>
 </head>
 <body>
@@ -20,7 +21,7 @@
       <p class="eyebrow"><span class="line"></span> UNE NUIT SANS FIN <span class="line"></span></p>
       <div class="title-line"><span class="fang" aria-hidden="true">✦</span><h1>ALYINA</h1><span class="fang" aria-hidden="true">✦</span></div>
       <p class="subtitle">VAMPIRE <em>OF</em> HALLOWEEN</p>
-      <p class="tagline">Chaque ligne effacée nourrit la nuit.</p>
+      <p class="tagline">Chaque ligne effacée nourrit la nuit. <span aria-hidden="true">✦</span> Bande-son ensorcelée.</p>
     </header>
     <main class="game-shell">
       <section class="play-column" aria-label="Terrain de jeu">
@@ -69,7 +70,8 @@
         </div>
         <div class="options">
           <button id="pause-button" type="button" class="option-button" aria-label="Mettre le jeu en pause" disabled>Ⅱ <span>PAUSE</span></button>
-          <button id="sound-button" type="button" class="option-button" aria-pressed="true" aria-label="Désactiver le son">♫ <span>SON ON</span></button>
+          <button id="sound-button" type="button" class="option-button" aria-pressed="true" aria-label="Désactiver les effets sonores">♫ <span>SFX ON</span></button>
+          <button id="music-button" type="button" class="option-button" aria-pressed="true" aria-label="Désactiver la musique">♬ <span>MUSIQUE ON</span></button>
         </div>
         <div class="help-card">
           <span class="help-title">LE GRIMOIRE</span>
