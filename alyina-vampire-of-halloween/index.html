@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10051d">
+  <meta name="description" content="Alyina: Vampire of Halloween — jeu de blocs d'arcade gothique, jouable sur ordinateur et mobile.">
+  <title>Alyina — Vampire of Halloween</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Creepster&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./game.js" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><span class="moon"></span><span class="bat bat-one">⌁</span><span class="bat bat-two">⌁</span><span class="bat bat-three">⌁</span></div>
+  <div class="page">
+    <header class="hero">
+      <p class="eyebrow"><span class="line"></span> UNE NUIT SANS FIN <span class="line"></span></p>
+      <div class="title-line"><span class="fang" aria-hidden="true">✦</span><h1>ALYINA</h1><span class="fang" aria-hidden="true">✦</span></div>
+      <p class="subtitle">VAMPIRE <em>OF</em> HALLOWEEN</p>
+      <p class="tagline">Chaque ligne effacée nourrit la nuit.</p>
+    </header>
+    <main class="game-shell">
+      <section class="play-column" aria-label="Terrain de jeu">
+        <div class="stats">
+          <div class="stat"><span>SANG RÉCOLTÉ</span><strong id="score">0</strong></div>
+          <div class="stat"><span>LIGNES</span><strong id="lines">0</strong></div>
+          <div class="stat"><span>NUIT</span><strong id="level">01</strong></div>
+        </div>
+        <div class="board-frame">
+          <div class="board-glow" aria-hidden="true"></div>
+          <canvas id="board" width="300" height="600" aria-label="Plateau de dix colonnes sur vingt lignes"></canvas>
+          <div id="overlay" class="overlay">
+            <div class="overlay-content">
+              <span class="overlay-sigil" aria-hidden="true">✝</span>
+              <p class="overlay-overline" id="overlay-kicker">LE RÉVEIL</p>
+              <h2 id="overlay-title">La nuit t'attend</h2>
+              <p id="overlay-message">Empile les reliques. Récolte le sang. Échappe à l'aube.</p>
+              <button id="primary-button" class="primary-button" type="button">RÉVEILLER ALYINA <span aria-hidden="true">→</span></button>
+              <p class="overlay-hint">ESPACE : CHUTE · ↑ : ROTATION · P : PAUSE</p>
+            </div>
+          </div>
+        </div>
+        <div class="touch-controls" aria-label="Commandes tactiles">
+          <button class="control special" type="button" data-action="hold" aria-label="Réserver la pièce" title="Réserver (C)"><span>◇</span><small>GARDER</small></button>
+          <button class="control" type="button" data-action="rotate" aria-label="Tourner la pièce" title="Rotation (↑)"><span>↻</span><small>TOURNER</small></button>
+          <button class="control special" type="button" data-action="hard-drop" aria-label="Chute instantanée" title="Chute instantanée (Espace)"><span>⇣</span><small>CHUTE</small></button>
+          <button class="control" type="button" data-action="left" aria-label="Déplacer à gauche" title="Gauche (←)"><span>←</span><small>GAUCHE</small></button>
+          <button class="control" type="button" data-action="down" aria-label="Descendre plus vite" title="Descendre (↓)"><span>↓</span><small>DESCENDRE</small></button>
+          <button class="control" type="button" data-action="right" aria-label="Déplacer à droite" title="Droite (→)"><span>→</span><small>DROITE</small></button>
+        </div>
+      </section>
+      <aside class="sidebar" aria-label="Informations et options">
+        <div class="side-card coming">
+          <div class="card-heading"><span class="diamond">✦</span> À VENIR</div>
+          <canvas id="next" width="120" height="120" aria-label="Prochaine pièce"></canvas>
+        </div>
+        <div class="side-card reserve">
+          <div class="card-heading"><span class="diamond">✧</span> RÉSERVE</div>
+          <canvas id="hold" width="120" height="120" aria-label="Pièce mise en réserve"></canvas>
+          <p class="tiny">TOUCHE C</p>
+        </div>
+        <div class="side-card best-card">
+          <div class="card-heading"><span class="diamond">♜</span> RECORD</div>
+          <strong id="best">0</strong>
+          <p class="tiny">TON PLUS GRAND BUTIN</p>
+        </div>
+        <div class="options">
+          <button id="pause-button" type="button" class="option-button" aria-label="Mettre le jeu en pause" disabled>Ⅱ <span>PAUSE</span></button>
+          <button id="sound-button" type="button" class="option-button" aria-pressed="true" aria-label="Désactiver le son">♫ <span>SON ON</span></button>
+        </div>
+        <div class="help-card">
+          <span class="help-title">LE GRIMOIRE</span>
+          <p><kbd>←</kbd> <kbd>→</kbd> déplacer</p>
+          <p><kbd>↑</kbd> / <kbd>X</kbd> tourner</p>
+          <p><kbd>Z</kbd> sens inverse</p>
+          <p><kbd>↓</kbd> accélérer</p>
+          <p><kbd>ESPACE</kbd> lâcher</p>
+          <p><kbd>C</kbd> garder · <kbd>P</kbd> pause</p>
+        </div>
+      </aside>
+    </main>
+    <footer><span>✦</span> STUDIO NIKO DESIGN <span>✦</span> <small>UNE EXPÉRIENCE D'ARCADE NOCTURNE</small></footer>
+  </div>
+  <div id="announcer" class="sr-only" role="status" aria-live="polite"></div>
+</body>
+</html>
