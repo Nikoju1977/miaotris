@@ -126,3 +126,15 @@ footer span{color:#f17481;text-shadow:0 0 10px #e74166}
 #music-button span{font-size:10px;color:#ffdbbd}
 #music-button[aria-pressed="false"]{opacity:.72;box-shadow:none}
 @media(max-width:600px){#music-button{min-height:40px;gap:5px}#music-button span{font-size:8px}}
+
+/* Precise mobile handling: thumb-friendly controls and gesture instructions. */
+.gesture-tip{margin:9px 1px 1px;text-align:center;color:#bba6c2;font-size:9px;letter-spacing:.4px;line-height:1.55}
+.gesture-tip strong{color:#ffbfa1;font-weight:800}
+.touch-controls{gap:9px;margin-top:8px}
+.control{min-height:67px;border-width:1.4px;touch-action:none;overscroll-behavior:contain}
+.control span{font-size:29px}
+.control[data-action="hard-drop"]{background:linear-gradient(155deg,#8b2949,#501637);border-color:#f1a184}
+.control[data-action="left"],.control[data-action="right"]{border-color:rgba(240,141,173,.58)}
+.help-touch{border-top:1px solid rgba(255,181,145,.18);padding-top:9px;color:#f0b49e!important;line-height:1.5!important}
+@media(max-width:600px){.gesture-tip{font-size:8px;line-height:1.35;margin:7px 0 0}.touch-controls{gap:7px;margin-top:7px}.control{min-height:60px}.control span{font-size:26px}}
+@media(max-width:355px){.control{min-height:55px}.gesture-tip{font-size:7px}}
