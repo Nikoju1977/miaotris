@@ -37,7 +37,11 @@
   let bag=[],queue=[],piece=null,held=null,holdUsed=false;
   let score=0,lines=0,level=1,combo=-1,best=0;
   let started=false,paused=false,over=false,audioOn=true,musicOn=true,audioCtx=null;
-  let dropClock=0,lastFrame=0,raf=0,particles=[],shake=0,flash=0,lightning=0,popup=null;
+  let dropClock=0,lockClock=0,lockResets=0,lastFrame=0,raf=0,particles=[],shake=0,flash=0,lightning=0,popup=null;
+  const LOCK_DELAY=520, MAX_LOCK_RESETS=15;
+  const DAS=155, ARR=47, SOFT_ARR=36;
+  const inputs=new Map();
+  let inputSequence=0;
   try{best=Number(localStorage.getItem(storageKey))||0;}catch(_){}
   bestEl.textContent=best.toLocaleString("fr-FR");
   let seed=171031;
@@ -111,7 +115,7 @@
     bag.push(...a);
   }
   function refill(){while(queue.length<5){if(!bag.length)newBag();queue.push(bag.shift());}}
-  function create(type){return {type,m:shapes[type].map(r=>r.slice()),x:0,y:0};}
+  function create(type){return {type,m:shapes[type].map(r=>r.slice()),x:0,y:0,rotation:0};}
   function fits(p,dx=0,dy=0,m=p.m){
     for(let y=0;y<m.length;y++)for(let x=0;x<m[y].length;x++){
       if(!m[y][x])continue;
@@ -122,7 +126,8 @@
   }
   function spawn(){
     refill();piece=create(queue.shift());refill();
-    piece.x=Math.floor((W-piece.m.length)/2);piece.y=0;holdUsed=false;previews();
+    piece.x=Math.floor((W-piece.m.length)/2);piece.y=0;holdUsed=false;
+    dropClock=0;lockClock=0;lockResets=0;previews();
     if(!fits(piece))endGame();
   }
   function stats(){
@@ -158,9 +163,19 @@
       osc.start(t);osc.stop(t+duration+.01);
     }catch(_){}
   }
+  function groundTouchChanged(wasGrounded){
+    if(!wasGrounded)return;
+    if(!fits(piece,0,1)){
+      if(lockResets<MAX_LOCK_RESETS){lockClock=0;lockResets++;}
+    }else lockClock=0;
+  }
   function move(dx){
-    if(!awake())return;
-    if(fits(piece,dx)){piece.x+=dx;sound(240,.04,"triangle",.012);}
+    if(!awake())return false;
+    if(!fits(piece,dx))return false;
+    const grounded=!fits(piece,0,1);
+    piece.x+=dx;groundTouchChanged(grounded);
+    sound(240,.034,"triangle",.010);
+    return true;
   }
   function rotateMatrix(m,dir){
     const n=m.length,r=Array.from({length:n},()=>Array(n).fill(0));
@@ -170,30 +185,62 @@
     }
     return r;
   }
+  // Guideline Super Rotation System (SRS), y-axis inverted for Canvas.
+  // Each orientation is indexed 0, R, 2, L. Keep separate I-piece kicks.
+  const kicksJLSTZ={
+    "0>1":[[0,0],[-1,0],[-1,-1],[0,2],[-1,2]],
+    "1>2":[[0,0],[1,0],[1,1],[0,-2],[1,-2]],
+    "2>3":[[0,0],[1,0],[1,-1],[0,2],[1,2]],
+    "3>0":[[0,0],[-1,0],[-1,1],[0,-2],[-1,-2]],
+    "1>0":[[0,0],[1,0],[1,1],[0,-2],[1,-2]],
+    "2>1":[[0,0],[-1,0],[-1,-1],[0,2],[-1,2]],
+    "3>2":[[0,0],[-1,0],[-1,1],[0,-2],[-1,-2]],
+    "0>3":[[0,0],[1,0],[1,-1],[0,2],[1,2]]
+  };
+  const kicksI={
+    "0>1":[[0,0],[-2,0],[1,0],[-2,-1],[1,2]],
+    "1>2":[[0,0],[-1,0],[2,0],[-1,2],[2,-1]],
+    "2>3":[[0,0],[2,0],[-1,0],[2,1],[-1,-2]],
+    "3>0":[[0,0],[1,0],[-2,0],[1,-2],[-2,1]],
+    "1>0":[[0,0],[2,0],[-1,0],[2,1],[-1,-2]],
+    "2>1":[[0,0],[1,0],[-2,0],[1,-2],[-2,1]],
+    "3>2":[[0,0],[-2,0],[1,0],[-2,-1],[1,2]],
+    "0>3":[[0,0],[-1,0],[2,0],[-1,2],[2,-1]]
+  };
   function rotate(dir){
-    if(!awake()||piece.type==="O")return;
-    const r=rotateMatrix(piece.m,dir);
-    for(const [dx,dy] of [[0,0],[-1,0],[1,0],[-2,0],[2,0],[0,-1],[-1,-1],[1,-1],[0,-2]]){
-      if(fits(piece,dx,dy,r)){piece.x+=dx;piece.y+=dy;piece.m=r;sound(380,.1,"sine",.026,590);break;}
+    if(!awake()||piece.type==="O")return false;
+    const old=piece.rotation, next=(old+dir+4)%4;
+    const matrix=rotateMatrix(piece.m,dir), tests=(piece.type==="I"?kicksI:kicksJLSTZ)[old+">"+next];
+    const grounded=!fits(piece,0,1);
+    for(const [dx,dy] of tests){
+      if(fits(piece,dx,dy,matrix)){
+        piece.x+=dx;piece.y+=dy;piece.m=matrix;piece.rotation=next;
+        groundTouchChanged(grounded);
+        sound(380,.10,"sine",.026,590);return true;
+      }
     }
+    return false;
   }
   function down(){
     if(!awake())return;
-    if(fits(piece,0,1)){piece.y++;score++;stats();}
-    else lock();
+    if(fits(piece,0,1)){
+      piece.y++;score++;lockClock=0;stats();
+    }
+    // Soft drop never forces an accidental lock. Hard drop locks instantly.
     dropClock=0;
   }
   function hardDrop(){
     if(!awake())return;
     let distance=0;while(fits(piece,0,1)){piece.y++;distance++;}
     score+=2*distance;shake=9;flash=.2;sound(130,.18,"sawtooth",.04,55);
-    lock();stats();dropClock=0;
+    lock();stats();dropClock=0;lockClock=0;
   }
   function holdPiece(){
     if(!awake()||holdUsed)return;
     const type=piece.type;
     if(held){
       piece=create(held);held=type;piece.x=Math.floor((W-piece.m.length)/2);
+      dropClock=0;lockClock=0;lockResets=0;
       if(!fits(piece)){endGame();return;}
     }else{held=type;spawn();}
     holdUsed=true;previews();sound(510,.12,"triangle",.025,300);
@@ -239,13 +286,14 @@
     sweep();spawn();
   }
   function endGame(){
-    over=true;paused=false;halloween.stopMusic();pauseButton.disabled=true;pauseButton.innerHTML='Ⅱ <span>PAUSE</span>';
+    over=true;paused=false;clearInputs();halloween.stopMusic();pauseButton.disabled=true;pauseButton.innerHTML='Ⅱ <span>PAUSE</span>';
     overlayMode("over");sound(275,.65,"sawtooth",.045,55);say("Fin de partie. Score "+score);
   }
   function start(){
+    clearInputs();
     halloween.stopMusic();
     board.forEach(row=>row.fill(0));bag=[];queue=[];piece=null;held=null;holdUsed=false;
-    score=0;lines=0;level=1;combo=-1;dropClock=0;lastFrame=0;
+    score=0;lines=0;level=1;combo=-1;dropClock=0;lockClock=0;lockResets=0;lastFrame=0;
     particles=[];shake=0;flash=0;popup=null;over=false;paused=false;started=true;
     stats();spawn();overlay.hidden=true;pauseButton.disabled=false;
     pauseButton.innerHTML='Ⅱ <span>PAUSE</span>';
@@ -255,7 +303,8 @@
   }
   function togglePause(){
     if(!started||over)return;
-    paused=!paused;lastFrame=0;dropClock=0;
+    paused=!paused;lastFrame=0;
+    clearInputs();
     if(paused){halloween.stopMusic();overlayMode("pause");say("Partie en pause.");}
     else{overlay.hidden=true;if(musicOn)halloween.startMusic();say("Partie reprise.");}
     pauseButton.innerHTML=paused?'▶ <span>REPRENDRE</span>':'Ⅱ <span>PAUSE</span>';
@@ -324,6 +373,17 @@
       let ghostY=0;while(fits(piece,0,ghostY+1))ghostY++;
       if(ghostY)pieceTiles(ctx,piece,true,ghostY);
       pieceTiles(ctx,piece);
+      if(!fits(piece,0,1)){
+        // Fine luminous landing timer along the piece's feet.
+        const amount=Math.min(1,lockClock/LOCK_DELAY);
+        ctx.fillStyle="rgba(255,189,118,"+(0.35+amount*.65)+")";
+        piece.m.forEach((row,y)=>row.forEach((id,x)=>{
+          if(id&&(y===piece.m.length-1||!piece.m[y+1][x])){
+            const py=(piece.y+y+1)*S;
+            if(py>=0&&py<=H*S)ctx.fillRect((piece.x+x)*S+4,py-2,amount*(S-8),2.2);
+          }
+        }));
+      }
     }
     const vignette=ctx.createRadialGradient(150,280,145,150,300,380);
     vignette.addColorStop(0,"transparent");vignette.addColorStop(1,"rgba(8,3,16,.55)");
@@ -352,10 +412,21 @@
     const dt=lastFrame?Math.min((time-lastFrame)/1000,.05):0;
     lastFrame=time;
     if(!paused){
-      if(started&&!over){
+      if(awake()){
+        updateInputs(dt*1000);
+        // Gravity and delayed locking run on the same clock as keyboard/touch.
         dropClock+=dt*1000;
-        if(dropClock>=delay()){
-          dropClock=0;if(fits(piece,0,1))piece.y++;else lock();
+        if(fits(piece,0,1)){
+          lockClock=0;
+          if(dropClock>=delay()){
+            dropClock=0;
+            if(fits(piece,0,1))piece.y++;
+          }
+        }else{
+          // Allow positioning a landed piece before committing it.
+          dropClock=Math.min(dropClock,delay());
+          lockClock+=dt*1000;
+          if(lockClock>=LOCK_DELAY)lock();
         }
       }
       shake=Math.max(0,shake-dt*27);flash=Math.max(0,flash-dt*1.7);
@@ -369,66 +440,128 @@
   }
   const commands={left:()=>move(-1),right:()=>move(1),down,rotate:()=>rotate(1),"hard-drop":hardDrop,hold:holdPiece};
   const keys={ArrowLeft:"left",ArrowRight:"right",ArrowDown:"down",ArrowUp:"rotate",KeyX:"rotate",KeyZ:"reverse",Space:"hard-drop",KeyC:"hold",ShiftLeft:"hold",ShiftRight:"hold"};
+  const repeats=new Set(["left","right","down"]);
+
+  function releaseInput(id){
+    const input=inputs.get(id);
+    if(!input)return;
+    if(input.button)input.button.classList.remove("held");
+    inputs.delete(id);
+  }
+  function clearInputs(){
+    for(const id of [...inputs.keys()])releaseInput(id);
+  }
+  function beginInput(id,action,button=null){
+    if(!awake()||inputs.has(id))return;
+    const state={action,button,wait:action==="down"?72:DAS,
+      step:action==="down"?SOFT_ARR:ARR,order:++inputSequence};
+    inputs.set(id,state);
+    if(button)button.classList.add("held");
+    if(action==="reverse")rotate(-1);
+    else commands[action]();
+  }
+  function updateInputs(ms){
+    let horizontal=null;
+    for(const state of inputs.values()){
+      if(state.action!=="left"&&state.action!=="right")continue;
+      if(!horizontal||horizontal.order<state.order)horizontal=state;
+    }
+    for(const state of inputs.values()){
+      if(!repeats.has(state.action))continue;
+      if((state.action==="left"||state.action==="right")&&horizontal!==state)continue;
+      state.wait-=ms;
+      let iterations=0;
+      while(state.wait<=0&&iterations++<4&&awake()){
+        commands[state.action]();
+        state.wait+=state.step;
+      }
+      if(state.wait<0)state.wait=0;
+    }
+  }
   window.addEventListener("keydown",e=>{
     const code=e.code;
     if(keys[code]||code==="KeyP"||code==="Escape"||code==="Enter")e.preventDefault();
     if(code==="KeyP"||code==="Escape"){if(!e.repeat)togglePause();return;}
-    if(!started||over){if((code==="Enter"||code==="Space")&&!e.repeat)start();return;}
-    if(paused){if((code==="Enter"||code==="Space")&&!e.repeat)togglePause();return;}
-    if(!keys[code])return;
-    if(e.repeat&&!["ArrowLeft","ArrowRight","ArrowDown"].includes(code))return;
-    if(code==="KeyZ")rotate(-1);else commands[keys[code]]();
+    if(!started||over){
+      if((code==="Enter"||code==="Space")&&!e.repeat)start();
+      return;
+    }
+    if(paused){
+      if((code==="Enter"||code==="Space")&&!e.repeat)togglePause();
+      return;
+    }
+    if(!keys[code]||e.repeat)return;
+    beginInput("key:"+code,keys[code]);
   });
-  const repeats=new Map();
-  function release(id){
-    const r=repeats.get(id);if(!r)return;
-    clearTimeout(r.timeout);clearInterval(r.interval);r.button.classList.remove("held");repeats.delete(id);
-  }
+  window.addEventListener("keyup",e=>{
+    releaseInput("key:"+e.code);
+  });
+
   document.querySelectorAll("[data-action]").forEach(button=>{
     const action=button.dataset.action;
     button.addEventListener("pointerdown",e=>{
-      e.preventDefault();if(!awake())return;
+      e.preventDefault();
+      if(!awake())return;
       try{button.setPointerCapture(e.pointerId);}catch(_){}
-      commands[action]();button.classList.add("held");
-      const r={button,timeout:null,interval:null};repeats.set(e.pointerId,r);
-      if(["left","right","down"].includes(action)){
-        r.timeout=setTimeout(()=>{r.interval=setInterval(()=>{if(awake())commands[action]();},75);},240);
-      }
+      beginInput("touch:"+e.pointerId,action,button);
     });
-    for(const ev of ["pointerup","pointercancel","lostpointercapture"])button.addEventListener(ev,e=>release(e.pointerId));
+    for(const ev of ["pointerup","pointercancel","lostpointercapture"]){
+      button.addEventListener(ev,e=>releaseInput("touch:"+e.pointerId));
+    }
   });
   window.addEventListener("blur",()=>{
-    for(const id of [...repeats.keys()])release(id);
+    clearInputs();
     if(started&&!paused&&!over)togglePause();
   });
   document.addEventListener("visibilitychange",()=>{
     if(document.hidden&&started&&!paused&&!over)togglePause();
   });
+
+  // Gestures: tap rotates; horizontal drag tracks finger across cells.
+  // Vertical drag soft drops only. Instant drop requires the dedicated button:
+  // no more accidental hard drops on ordinary downwards swipes.
   let gesture=null;
   canvas.addEventListener("pointerdown",e=>{
-    if(!awake())return;
-    e.preventDefault();canvas.setPointerCapture(e.pointerId);
-    gesture={id:e.pointerId,x:e.clientX,y:e.clientY,originY:e.clientY,moved:false};
+    if(!awake()||gesture!==null)return;
+    e.preventDefault();
+    try{canvas.setPointerCapture(e.pointerId);}catch(_){}
+    const unit=canvas.getBoundingClientRect().width/W;
+    gesture={id:e.pointerId,startX:e.clientX,startY:e.clientY,
+      moved:false,axis:null,handled:0,unit};
   });
   canvas.addEventListener("pointermove",e=>{
     if(!gesture||gesture.id!==e.pointerId||!awake())return;
-    e.preventDefault();const unit=canvas.getBoundingClientRect().width/W;
-    const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;
-    if(Math.abs(dx)>unit*.74){
-      const dir=dx>0?1:-1;move(dir);gesture.x+=dir*unit*.74;gesture.moved=true;
+    e.preventDefault();
+    const dx=e.clientX-gesture.startX,dy=e.clientY-gesture.startY;
+    if(gesture.axis===null){
+      if(Math.max(Math.abs(dx),Math.abs(dy))<gesture.unit*.37)return;
+      gesture.axis=Math.abs(dx)>Math.abs(dy)*1.13?"x":"y";
     }
-    if(dy>unit*.98){down();gesture.y+=unit*.98;gesture.moved=true;}
+    if(gesture.axis==="x"){
+      const target=Math.trunc(dx/(gesture.unit*.72));
+      const change=target-gesture.handled;
+      if(change){
+        const dir=Math.sign(change);
+        for(let i=0;i<Math.min(Math.abs(change),10);i++)move(dir);
+        gesture.handled=target;gesture.moved=true;
+      }
+    }else if(dy>0){
+      const target=Math.floor(dy/(gesture.unit*.64));
+      const change=target-gesture.handled;
+      if(change>0){
+        for(let i=0;i<Math.min(change,18);i++)down();
+        gesture.handled=target;gesture.moved=true;
+      }
+    }
   });
-  canvas.addEventListener("pointerup",e=>{
-    if(!gesture||gesture.id!==e.pointerId)return;
-    if(awake()){
-      const travel=e.clientY-gesture.originY;
-      if(travel>canvas.getBoundingClientRect().width*.35)hardDrop();
-      else if(!gesture.moved)rotate(1);
-    }
+  function finishGesture(id,completed){
+    if(!gesture||gesture.id!==id)return;
+    if(completed&&!gesture.moved&&gesture.axis===null&&awake())rotate(1);
     gesture=null;
-  });
-  canvas.addEventListener("pointercancel",()=>gesture=null);
+  }
+  canvas.addEventListener("pointerup",e=>finishGesture(e.pointerId,true));
+  canvas.addEventListener("pointercancel",e=>finishGesture(e.pointerId,false));
+  canvas.addEventListener("lostpointercapture",e=>finishGesture(e.pointerId,false));
   primary.addEventListener("click",()=>{if(paused&&!over)togglePause();else start();});
   pauseButton.addEventListener("click",togglePause);
   soundButton.addEventListener("click",()=>{
