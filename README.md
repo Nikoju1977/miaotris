@@ -1,4 +1,11 @@
 # 🐱 Miaotris
+
+## Ce que fait l'application, en pratique
+
+**Miaotris** est un petit jeu de blocs à thème félin : déplacer les pièces à gauche ou à droite, **les faire tourner, accélérer leur chute**, puis recommencer une partie. Les commandes sont visibles dans l'interface web et un univers visuel complémentaire se trouve dans le dépôt.
+
+**Statut :** expérience de jeu navigateur, sans garantie publiée de compatibilité avec tous les mobiles.
+
 **Studio Niko Design** — Projet créatif interactif HTML.
 
 ## 🛠 Stack
